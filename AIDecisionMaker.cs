@@ -27,13 +27,11 @@ namespace AI_BehaviorTree_AIImplementation
 
         //Fin du bloc de fonction nécessaire (Attention ComputeAIDecision en fait aussi partit)
 
-
-        private float BestDistanceToFire = 10.0f;
         public List<AIAction> ComputeAIDecision()
         {
             List<AIAction> actionList = new List<AIAction>();
-
             List<PlayerInformations> playerInfos = AIGameWorldUtils.GetPlayerInfosList();
+            PlayerInformations myPlayerInfos = GetPlayerInfos(AIId, playerInfos);
 
             PlayerInformations target = null;
             foreach (PlayerInformations playerInfo in playerInfos)
@@ -41,7 +39,7 @@ namespace AI_BehaviorTree_AIImplementation
                 if (!playerInfo.IsActive)
                     continue;
 
-                if (playerInfo.PlayerId == AIId)
+                if (playerInfo.PlayerId == myPlayerInfos.PlayerId)
                     continue;
 
                 target = playerInfo;
@@ -51,27 +49,20 @@ namespace AI_BehaviorTree_AIImplementation
             if (target == null)
                 return actionList;
 
-            PlayerInformations myPlayerInfo = GetPlayerInfos(AIId, playerInfos);
-            if (myPlayerInfo == null)
-                return actionList;
+            actionList.Add(new AIActionLookAtPosition(target.Transform.Position));
 
-            if (Vector3.Distance(myPlayerInfo.Transform.Position, target.Transform.Position) < BestDistanceToFire)
-            {
-                AIActionStopMovement actionStop = new AIActionStopMovement();
-                actionList.Add(actionStop);
-            }
+            if (Vector3.Distance(myPlayerInfos.Transform.Position, target.Transform.Position) > 10.0f)
+                actionList.Add(new AIActionMoveToDestination(target.Transform.Position));
             else
+                actionList.Add(new AIActionStopMovement());
+
+            RaycastHit hit;
+            Vector3 direction = myPlayerInfos.Transform.Rotation * Vector3.forward;
+            if (Physics.Raycast(myPlayerInfos.Transform.Position, direction.normalized, out hit, 100.0f))
             {
-                AIActionMoveToDestination actionMove = new AIActionMoveToDestination();
-                actionMove.Position = target.Transform.Position;
-                actionList.Add(actionMove);
+                if (AIGameWorldUtils.PlayerLayerMask == (AIGameWorldUtils.PlayerLayerMask | (1 << hit.collider.gameObject.layer)))
+                    actionList.Add(new AIActionFire());
             }
-
-
-            AIActionLookAtPosition actionLookAt = new AIActionLookAtPosition();
-            actionLookAt.Position = target.Transform.Position;
-            actionList.Add(actionLookAt);
-            actionList.Add(new AIActionFire());
 
             return actionList;
         }
