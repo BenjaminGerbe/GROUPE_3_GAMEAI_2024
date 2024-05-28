@@ -1,7 +1,10 @@
 ﻿using AI_BehaviorTree_AIGameUtility;
+using Benjamin_IA;
+using IA_BRAIN;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Assertions;
 
 namespace AI_BehaviorTree_AIImplementation
@@ -21,10 +24,11 @@ namespace AI_BehaviorTree_AIImplementation
         public void SetAIId(int parAIId) { AIId = parAIId; }
 
         // Vous pouvez modifier le contenu de cette fonction pour modifier votre nom en jeu
-        public string GetName() { return "LiLiLiLiLi3"; }
+        public string GetName() { return "LiLiLiLi"; }
 
         public void SetAIGameWorldUtils(GameWorldUtils parGameWorldUtils) { AIGameWorldUtils = parGameWorldUtils; }
-
+        
+        public IA_Behavior IA_Behavior_;
         //Fin du bloc de fonction nécessaire (Attention ComputeAIDecision en fait aussi partit)
 
         public List<AIAction> ComputeAIDecision()
@@ -32,39 +36,9 @@ namespace AI_BehaviorTree_AIImplementation
             List<AIAction> actionList = new List<AIAction>();
             List<PlayerInformations> playerInfos = AIGameWorldUtils.GetPlayerInfosList();
             PlayerInformations myPlayerInfos = GetPlayerInfos(AIId, playerInfos);
-        
-            PlayerInformations target = null;
-            foreach (PlayerInformations playerInfo in playerInfos)
-            {
-                if (!playerInfo.IsActive)
-                    continue;
-
-                if (playerInfo.PlayerId == myPlayerInfos.PlayerId)
-                    continue;
-
-                target = playerInfo;
-                break;
-            }
-
-            if (target == null)
-                return actionList;
-
-            actionList.Add(new AIActionLookAtPosition(target.Transform.Position));
-
-            if (Vector3.Distance(myPlayerInfos.Transform.Position, target.Transform.Position) > 10.0f)
-                actionList.Add(new AIActionMoveToDestination(target.Transform.Position));
-            else
-                actionList.Add(new AIActionStopMovement());
-
-            RaycastHit hit;
-            Vector3 direction = myPlayerInfos.Transform.Rotation * Vector3.forward;
-            if (Physics.Raycast(myPlayerInfos.Transform.Position, direction.normalized, out hit, 100.0f))
-            {
-                if (AIGameWorldUtils.PlayerLayerMask == (AIGameWorldUtils.PlayerLayerMask | (1 << hit.collider.gameObject.layer)))
-                    actionList.Add(new AIActionFire());
-            }
-
-            return actionList;
+            IA_Behavior_ = new IA_Behavior();
+            
+            return IA_Behavior_.Actions(AIGameWorldUtils, myPlayerInfos);
         }
 
         public PlayerInformations GetPlayerInfos(int parPlayerId, List<PlayerInformations> parPlayerInfosList)

@@ -26,7 +26,7 @@ namespace IA_BRAIN
         protected State state;
         protected List<Node> nodes;
         protected List<Special> specials;
-        protected Func<State> Conditions;
+        protected Func<State> Action;
 
         public Node()
         {
@@ -49,12 +49,12 @@ namespace IA_BRAIN
             this.specials = specials;
         }
 
-        public void SetConditionFunc(Func<State> Conditions){
-            this.Conditions = Conditions;
+        public void SetActionFunc(Func<State> Conditions){
+            this.Action = Conditions;
         }
 
         public virtual void Compute_Node(){
-            this.state = this.Conditions.Invoke();
+            this.state = this.Action.Invoke();
             for (int i = 0; i < this.specials.Count; i++)
             {
                 if (this.specials[i] == Special.Invert &&
@@ -83,29 +83,6 @@ namespace IA_BRAIN
         public void Add(Node node) { nodes.Add(node); }
     }
 
-    public class BIA_Action : Node
-    {
-        protected Func<State> action;
-        public BIA_Action() : base(){
-
-        }
-        public BIA_Action(List<Node> nodes) : base(nodes){
-
-        }
-        public BIA_Action(List<Node> nodes, List<Special> specials) : base(nodes, specials){
-
-        }
-
-        public override void Compute_Node(){
-            this.action.Invoke();
-        }
-
-
-        public void SetAction(Func<State> action)
-        {
-            this.action = action;
-        }
-    }
 
     public class Selector : Node
     {

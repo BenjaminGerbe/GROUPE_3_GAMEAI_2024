@@ -121,6 +121,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AIDecisionMaker.cs" />
+    <Compile Include="IA_Behavior.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Benjamin_IA.rd.xml" />
   </ItemGroup>
