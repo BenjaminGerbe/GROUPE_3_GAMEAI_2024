@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Composition.Scenes;
+using UnityEngine;
 
 namespace IA_BRAIN
 {
@@ -55,14 +56,22 @@ namespace IA_BRAIN
 
         public virtual void Compute_Node(){
             this.state = this.Action.Invoke();
+            ApplySpecial();
+        }
+
+        public void ApplySpecial()
+        {
             for (int i = 0; i < this.specials.Count; i++)
             {
                 if (this.specials[i] == Special.Invert &&
-                    this.state == State.Success || this.state == State.Failure){
-                    if(this.state == State.Success){
+                    this.state == State.Success || this.state == State.Failure)
+                {
+                    if (this.state == State.Success)
+                    {
                         this.state = State.Failure;
                     }
-                    else{
+                    else
+                    {
                         this.state = State.Success;
                     }
                 }
@@ -81,6 +90,8 @@ namespace IA_BRAIN
 
         public State GetState() { return state; }
         public void Add(Node node) { nodes.Add(node); }
+
+        public void AddSpecial(Special spec) { specials.Add(spec); }
     }
 
 
@@ -98,16 +109,17 @@ namespace IA_BRAIN
         }
 
         public override void Compute_Node(){
-            this.state = State.Running;
+            this.state = State.Failure;
             for (int i =0;i< this.nodes.Count; i++)
             {
                 this.nodes[i].Compute_Node();
                 if (this.nodes[i].GetState() == State.Success){
                     this.state = State.Success;
-                    return;
+                    break;
                 }
             }
-            this.state = State.Failure;
+            
+            this.ApplySpecial();
         }
     }
 
@@ -121,16 +133,17 @@ namespace IA_BRAIN
 
      
         public override void Compute_Node(){
-            this.state = State.Running;
+            this.state = State.Success;
             for (int i = 0; i < this.nodes.Count; i++)
             {
                 this.nodes[i].Compute_Node();
                 if (this.nodes[i].GetState() == State.Failure){
                     this.state = State.Failure;
-                    return;
+                    break;
                 }
             }
-            this.state = State.Success;
+       
+            this.ApplySpecial();
         }
     }
 
