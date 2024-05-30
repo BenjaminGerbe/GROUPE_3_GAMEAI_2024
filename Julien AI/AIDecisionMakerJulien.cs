@@ -91,8 +91,8 @@ namespace AI_BehaviorTree_AIImplementation
             Selector FireSelect = new Selector(fireSel);
             List<Node> chooseList = new List<Node>() { chooseNext,goTo, lookAt};
             Sequence targetChooseSeq = new Sequence(chooseList); 
-            List<Node> afterFire = new List<Node>() { targetChooseSeq, DashSelect};
-            Selector AFSelect = new Selector(afterFire);
+            List<Node> afterFire = new List<Node>() { targetChooseSeq, /*DashSelect*/};
+            Sequence AFSelect = new Sequence(afterFire);
             List<Node> start = new List<Node>() { fire, AFSelect};
             Sequence StartSeq = new Sequence(start);
             tree =  StartSeq;
@@ -163,7 +163,7 @@ namespace AI_BehaviorTree_AIImplementation
                     if (AIDecisionMaker.myPlayerInfos.IsDashAvailable)
                     {
                         Debug.Log(AIDecisionMaker.nextDash);
-                        Vector3 direction = AIDecisionMaker.TargetPos - AIDecisionMaker.myPlayerInfos.Transform.Position;
+                        Vector3 direction = Vector3.Normalize(AIDecisionMaker.TargetPos - AIDecisionMaker.myPlayerInfos.Transform.Position);
                         if (AIDecisionMaker.nextDash == "left")
                         {
                             direction = Quaternion.Euler(0,-90,0) * direction;
@@ -329,7 +329,7 @@ namespace AI_BehaviorTree_AIImplementation
         {
             this.SetActionFunc(() =>
             {
-                if (AIDecisionMaker.nextTarget == "bonus" )
+                if (AIDecisionMaker.nextTarget == "Bonus" )
                 {
                     AIDecisionMaker.nextDash = "forward"; 
                 }
