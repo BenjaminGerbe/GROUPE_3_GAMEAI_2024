@@ -24,9 +24,14 @@ namespace AI_BehaviorTree_AIImplementation
         public void SetAIId(int parAIId) { AIId = parAIId; }
 
         // Vous pouvez modifier le contenu de cette fonction pour modifier votre nom en jeu
-        public string GetName() { return "LiLiLiLi"; }
+        public string GetName() { return "LiLiLi"; }
 
         public void SetAIGameWorldUtils(GameWorldUtils parGameWorldUtils) { AIGameWorldUtils = parGameWorldUtils; }
+
+        public void OnMyAIDeath()
+        {
+
+        }
         
         public IA_Behavior IA_Behavior_;
         //Fin du bloc de fonction nécessaire (Attention ComputeAIDecision en fait aussi partit)
